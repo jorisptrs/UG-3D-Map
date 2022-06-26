@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Display buildings in 3D</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    
+</head>
+<body>
+    <div id="map"></div>
+    <div class='info'>
+        <TABLE>
+            <TR>
+            <TD>Name</TD>
+            <TD id='name'>Cell contents</TD>
+            </TR>
+            <TR>
+            <TD>Building Number(s)</TD>
+            <TD id='nb'>Cell contents</TD>
+            </TR>
+            <TR>
+            <TD>Faculty</TD>
+            <TD id='faculty'>Cell contents</TD>
+            </TR>
+            <TR>
+            <TD>Address</TD>
+            <TD id='address'>Cell contents</TD>
+            </TR>
+        </TABLE>
+    </div>
+  
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    <script type="module" src="main.js"></script>
+</body>
+</html>
