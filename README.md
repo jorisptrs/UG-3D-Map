@@ -8,3 +8,14 @@ The motivation is to make our local surroundings more accessible and perhaps giv
 - Mapbox (WebGL)
 - Nodejs
 - OpenStreetMaps
+
+## Run
+Run from root:
+
+> npm install
+
+> nodemon
+
+Access via:
+
+> localhost:8080
