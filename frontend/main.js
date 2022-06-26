@@ -1127,7 +1127,7 @@ window.mobileCheck = function() {
    return check;
  };
 if (window.mobileCheck()) {
-   map.addControl(geocoder, 'top-left');
+   map.addControl(geocoder, 'bottom-left');
 } else {
    map.addControl(geocoder, 'center');
 }
