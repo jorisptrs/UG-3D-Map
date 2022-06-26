@@ -1,12 +1,8 @@
 const express = require('express');
-const filesRouter = require('./file-route');
-const multer = require('multer');
 const path = require('path');
 
 const port = 8080;
-const index_path = path.join(__dirname,'..','frontend','index.html');
-
-var lastFileName = "";
+const index_path = path.join(__dirname,'frontend','index.html');
 
 // Init app
 const app = express();
@@ -19,7 +15,7 @@ app.get('/', (req, res) => {
 
 // serve any requested files
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname,'..','frontend',req.path));
+  res.sendFile(path.join(__dirname,'frontend',req.path));
 });
 
 // Start to listen at port
