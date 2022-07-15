@@ -1,0 +1,525 @@
+<!---https://parallel.co.uk/-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8 />
+	<title>Netherlands building ages</title>
+
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<link rel="mask-icon" href="../favicon.svg" color="#df5e26">
+
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css' rel='stylesheet' />
+
+	<script src='../resources/js/jquery/jquery-1.10.1.min.js'></script>
+	<script src='../resources/js/jquery/jquery-ui-1.11.4.custom/jquery-ui.min.js'></script>
+    <link rel='stylesheet' href='../resources/js/jquery/jquery-ui-1.11.4.custom/jquery-ui.min.css' type='text/css' />
+	<script src='../resources/js/taffydb/taffy-min.js'></script>
+	<script src='../resources/js/mustache/mustache.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4-src.js"></script>
+
+    <script type="text/javascript" src='../resources/js/parallel/gl/popup_control_class.js?02092019'></script>
+    <script type="text/javascript" src='../resources/js/parallel/gl/panel_control_class.js'></script>
+	<script type="text/javascript" src='resources/js/search/search_control_class.js'></script>
+	<script src="https://use.typekit.net/yqs3woa.js"></script>
+	<script>try{Typekit.load({ async: true });}catch(e){}</script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-43709910-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-43709910-1');
+	</script>
+
+	<link href='../resources/styles/gl_maps.css' rel='stylesheet' />
+
+	<style>
+		#info {
+			user-select: none;
+		}
+		.overlay {
+		    width: 240px;
+	    }
+	    .mapbox-search-control input[type='text'] {
+		    height: 30px !important;
+		    padding-left: 26px !important;
+	    }
+	    .mapbox-search-control .search-icon-search {
+		    top: 5px !important;
+		    left: 4px !important;
+	    }
+	    .mapbox-search-control .search-pin-right * {
+		    top: 5px !important;
+		    right: 5px !important;
+	    }
+
+	    #panel_control.overlay {
+		    top: 9px;
+		    height: 25px;
+		    width: 25px;
+		    padding: 0;
+		    background: url(../resources/glyphs/block-top-left-invert.svg) no-repeat 4px 4px rgba(255,255,255,0.9);
+			background-size: 16px 16px;
+	    }
+	    #panel_control.overlay.closed {
+		    background: url(../resources/glyphs/block-bottom-right-invert.svg) no-repeat 4px 4px rgba(255,255,255,0.9);
+			background-size: 16px 16px;
+	    }
+	    #panel_control.overlay:hover {
+		    cursor: pointer;
+		    background: url(../resources/glyphs/block-top-left.svg) no-repeat 4px 4px rgba(223,94,38,1);
+		    background-size: 16px 16px;
+		}
+		#panel_control.overlay.closed:hover {
+		    background: url(../resources/glyphs/block-bottom-right.svg) no-repeat 4px 4px rgba(223,94,38,1);
+		    background-size: 16px 16px;
+		}
+	    #parallel.overlay {
+		    left: 36px;
+		    width: 213px;
+	    }
+		.overlay.hidden {
+		   display:none;
+	    }
+
+	    .keychip {
+			padding-left: 4px;
+			border-left: 14px solid #333;
+			margin-top: 1px;
+		}
+		#info a {
+			color: rgba(223,94,38,1);
+		}
+		#info a:hover {
+			border-bottom: 1px dotted rgba(223,94,38,1);
+		}
+		#map #info {
+			font-size: 12px;
+			line-height: 14px;
+		}
+
+		.mapboxgl-popup-anchor-top {
+			margin-top: -6px;
+			pointer-events: none;
+		}
+		.mapboxgl-ctrl-bottom-right {
+			z-index: 2000;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		#panel_control.overlay {
+		    top: 9px;
+		    height: 32px;
+		    width: 32px;
+		    padding: 0;
+		    background: url(../resources/glyphs/block-top-left-invert.svg) no-repeat 8px 8px rgba(255,255,255,0.9);
+			background-size: 16px 16px;
+	    }
+	    #panel_control.overlay.closed {
+		    background: url(../resources/glyphs/block-bottom-right-invert.svg) no-repeat 8px 8px rgba(255,255,255,0.9);
+			background-size: 16px 16px;
+	    }
+	    #panel_control.overlay:hover {
+		    cursor: pointer;
+		    background: url(../resources/glyphs/block-top-left.svg) no-repeat 8px 8px rgba(223,94,38,1);
+		    background-size: 16px 16px;
+		}
+		#panel_control.overlay.closed:hover {
+		    background: url(../resources/glyphs/block-bottom-right.svg) no-repeat 8px 8px rgba(223,94,38,1);
+		    background-size: 16px 16px;
+		}
+		#info.overlay {
+		    top: 43px;
+		}
+		#parallel.overlay {
+		    left: 43px;
+		    width: 206px;
+		    height: 27px;
+	    }
+		.dark #parallel {
+			background: url(../resources/glyphs/parallel-logo.svg) no-repeat center 4px, rgba(255,255,255,0.9);
+			background-size: 44%;
+		}
+		#parallel:hover {
+			background: url(../resources/glyphs/parallel-logo.svg) no-repeat center -22px, rgba(223,94,38,1);
+			background-size: 44%;
+			cursor: pointer;
+		}
+
+		.mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+			max-width: 60vw;
+			padding-left: 16px;
+			text-indent: -12px;
+			line-height: 16px;
+		}
+	</style>
+</head>
+
+<body class="dark">
+
+<div id='map'>
+	<div id="panel_control" class='overlay open'></div>
+	<a id="parallel" class='overlay' href="https://parallel.co.uk/"></a>
+
+	<div id="info" class='overlay'>
+		<p style="margin-bottom: -6px;"><strong style="font-size: 14px;">Building ages in the Netherlands</strong></p>
+		<p>All 10 million or so buildings in the Netherlands. Building heights and date of construction from 3D BAG (Basisregistratie Adressen en Gebouwen) data.</p>
+		<div class="keychip" style="border-color: #117c3c;">2020</div>
+		<div class="keychip" style="border-color: #1d66aa;">2015</div>
+		<div class="keychip" style="border-color: #5096c2;">2000</div>
+		<div class="keychip" style="border-color: #84c7db;">1975</div>
+		<div class="keychip" style="border-color: #FEE090;">1950</div>
+		<div class="keychip" style="border-color: #fdae61;">1925</div>
+		<div class="keychip" style="border-color: #f46d43;">1900</div>
+		<div class="keychip" style="border-color: #d73027;">1850</div>
+		<div class="keychip" style="border-color: #a50026;">1800</div>
+		<div class="keychip" style="border-color: #740320;">1750</div>
+		<div class="keychip" style="border-color: #430719;">1700 or earlier</div>
+		<div class="keychip" style="border-color: #444444;">Not known</div>
+
+		<p class="search_box"></p>
+
+		<p>Data: 3D BAG by 3D Geoinformation Group, TU Delft, January 2020: <a href="http://3dbag.bk.tudelft.nl/" target="_blank" rel="noopener">3dbag.bk.tudelft.nl</a></p>
+
+		<!--<p>Thanks to inspiration from: <a href="http://code.waag.org/buildings/" target="_blank" rel="noopener">code.waag.org/buildings</a> and <a href="https://nieneb.nl/online-projects/gebouwen/" target="_blank" rel="noopener">nieneb.nl/online-projects/gebouwen</a>.</p>-->
+		<p>Thanks to <a href="https://mapbox.com/" target="_blank">Mapbox</a> for their generous support in keeping this resource live.</p>
+	</div>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoicGFyYWxsZWwiLCJhIjoiY2phOXhjYmIxMGx6aTJxbmlzamExbXpnciJ9.BmsCrHoleI1xtpNchSAq5A'; // parallel
+
+if (!mapboxgl.supported()) {
+	    alert('Your browser does not support Mapbox GL');
+	} else {
+
+	var map = new mapboxgl.Map({
+	  container: 'map',
+	  style: 'mapbox://styles/parallel/cjznv5kw822ae1cljb3t8dnoa',
+	  center: [4.9,52.365],
+	  zoom: 13.8,
+	  minZoom: 10,
+	  maxZoom: 19,
+	  pitch: 40,
+	  //maxBounds: [[-8.7, 49.8], [1.95, 60.9]],  // UK bounds - W,S,E,N
+	  hash: true,
+	  attributionControl: false
+	});
+
+	var att=new mapboxgl.AttributionControl({position: 'bottom-right'})
+
+	att._updateAttributions=function(){
+		 this._container.innerHTML="&copy; <a href=\"https://parallel.co.uk\" target=\"_blank\" rel=\"noopener\">parallel</a> | <a href=\"http://3dbag.bk.tudelft.nl\" target=\"_blank\" rel=\"noopener\">3D Geoinformation Group</a> | <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> contributors | <a href=\"http://www.mapbox.com\" target=\"_blank\" rel=\"noopener\">Mapbox</a>"
+	}
+	map.addControl(att);
+
+	const r = 255 * 0.65;
+
+	map.on('style.load', function () {
+	    map.addSource('buildings', {
+            type: 'vector',
+            url: 'mapbox://parallel.7kvmi6z4',
+			promoteId: {"bag3d_min": "i"}
+	    });
+
+	    map.addLayer({
+            "id": "buildings-extrude",
+            "type": "fill-extrusion",
+            "metadata": {},
+            "source": "buildings",
+            "source-layer": "bag3d_min",
+            "filter": [
+                "!in",
+                "i",
+            	"0363100012181304",
+                "0363100012240258",
+                "0363100012244554",
+                "0363100012244844",
+                "0363100012240435",
+			    "0363100012185419",
+			    "0363100012240311",
+				"0363100012241870",
+				"0363100012243774",
+				"0363100012242075",
+				"0363100012186191",
+				"0363100012182043",
+				"0363100012186096",
+				"0363100012186097"
+            ],
+            "layout": {},
+            "paint": {
+                "fill-extrusion-height": ["case",["all",["has","h"],[">",["get", "h"],2]],["get", "h"],8],
+                "fill-extrusion-color": [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "b"],
+                    1005,
+                    "#444444",
+                    1700,
+                    "#430719",
+                    1750,
+                    "#740320",
+                    1800,
+                    "#a50026",
+                    1850,
+                    "#d73027",
+                    1900,
+                    "#f46d43",
+                    1925,
+                    "#fdae61",
+                    1950,
+                    "#FEE090",
+                    1975,
+                    "#84c7db",
+                    2000,
+                    "#5096c2",
+                    2015,
+                    "#1d66aa",
+                    2021,
+                    "#117c3c",
+                    9999,
+                    "#444444"
+                ],
+                "fill-extrusion-opacity": 0.88
+            }
+        },'place-label');
+
+        map.addLayer({
+            "id": "buildings-extrude-top",
+            "type": "fill-extrusion",
+            "metadata": {},
+            "source": "buildings",
+            "source-layer": "bag3d_min",
+            "filter": [
+                "!in",
+                "i",
+            	"0363100012181304",
+                "0363100012240258",
+                "0363100012244554",
+                "0363100012244844",
+                "0363100012240435",
+			    "0363100012185419",
+			    "0363100012240311",
+				"0363100012241870",
+				"0363100012243774",
+				"0363100012242075",
+				"0363100012186191",
+				"0363100012182043",
+				"0363100012186096",
+				"0363100012186097"
+            ],
+            "layout": {},
+            "paint": {
+                "fill-extrusion-height": ["case",["all",["has","h"],[">",["get", "h"],2]],["get", "h"],8],
+                "fill-extrusion-color": ["case",
+					["==",["feature-state", "hover"], true],
+					"#000",
+                    ["interpolate",
+                    ["linear"],
+                    ["get", "b"],
+                    1005,
+                    "#444444",
+                    1700,
+                    "#430719",
+                    1750,
+                    "#740320",
+                    1800,
+                    "#a50026",
+                    1850,
+                    "#d73027",
+                    1900,
+                    "#f46d43",
+                    1925,
+                    "#fdae61",
+                    1950,
+                    "#FEE090",
+                    1975,
+                    "#84c7db",
+                    2000,
+                    "#5096c2",
+                    2015,
+                    "#1d66aa",
+                    2021,
+                    "#117c3c",
+                    9999,
+                    "#444444"
+                ]],
+                "fill-extrusion-opacity": 0.25
+            }
+        },'place-label');
+
+        var popup = new mapboxgl.Popup({
+		    closeButton: false,
+		    closeOnClick: false
+		});
+
+		let hovered = [];
+		window.addEventListener('mousemove', function(e) {
+	        e.point = new mapboxgl.Point(e.clientX, e.clientY);
+	        const features = map.queryRenderedFeatures(e.point, { layers: ['buildings-extrude'] });
+
+	        map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+	        for (const feature of hovered) {
+	            map.setFeatureState(feature, {
+	                'hover': false
+	            });
+	        }
+
+	        const seen = {};
+	        hovered = features;
+			if(hovered.length==0){
+				popup_control.popup_extrusion_event(e)
+			}
+	        let i = 0;
+	        for (const feature of hovered) {
+	            if (seen[feature.id]) continue;
+
+	            seen[feature.id] = true;
+	            map.setFeatureState(feature, {
+	                'hover': i === 0 ? true : false
+	            });
+				if(i===0){
+
+					popup_control.popup_extrusion_event(e,feature)
+				}
+	            i++;
+	        }
+	    });
+
+		create_popup_control({
+			"popup_details":{
+				"template":'<span style="font-size: 13px;"><div class="address" data-address-id="{{i}}"></div>{{#has_data}}Construction date: <b>{{b}}</b>{{/has_data}}{{^has_data}}Construction date: <b>Not known</b>{{/has_data}}</span>'
+
+				,"click_layer":"buildings-extrude"
+				,"source_id":"buildings"
+				,"source_layer":"bag3d_min"
+				,"source_column":"h"
+				,"check_props":"check_popup_template_params"
+				,"freeze_on_click":0
+				,"popup_anchor":"top"
+				,"popup_offset":[0,25]
+			}
+		})
+
+		popup_control.setup_control_extrusion()
+
+		create_search_control({"container":".search_box","mb_key":mapboxgl.accessToken,"start_action":"check_openlayers_before_fly","flown_action":"check_openlayers_after_fly","root_path":"https://parallel.co.uk","template_path":"https://parallel.co.uk/netherlands/resources/get/get_template.php?url=https://parallel.co.uk","autocomplete_position":{"my": "left top", "at": "left bottom"},"target_zoom":15,"nocache":1});
+
+	});
+
+	$(document).ready(function(){
+
+		$(".action.flyto").on("click",function(e){
+			flyto(e.target)
+
+		})
+
+		setup_map_events()
+	})
+	function setup_map_events(){
+		if(null!=map){
+
+		}else{
+			setTimeout(	setup_map_events,20)
+		}
+	}
+
+	function flyto(div){
+		var arr=$(div).attr("data-flyto-zoomlatlng").split("/")
+		map.flyTo({
+			center: [arr[1], arr[2]],
+			zoom: arr[0],
+			bearing: arr[3],
+			pitch: arr[4],
+			speed: 0.2,
+			curve: 1,
+			easing: function(t) {
+				return t;
+	  		}
+	  	})
+	}
+
+	map.addControl(new mapboxgl.NavigationControl({
+		visualizePitch: true
+	}));
+	map.addControl(new mapboxgl.FullscreenControl());
+
+	map.addControl(new mapboxgl.GeolocateControl({
+		showUserLocation: true,
+	    positionOptions: {
+	        enableHighAccuracy: true
+	    }
+	}));
+}
+var address_template
+function check_popup_template_params(props){
+	if(null!=props.b){ //b is date
+		if(props.b<=1005 || props.b>2020){
+
+		}else{
+			if(null!=props.i){
+				var existing=$("[data-address-id='"+props.i+"']")
+
+				if(	existing.length>0){
+					props.same_data=1
+				}
+			}
+			if(null==props.same_data){
+				props.has_data=1
+				if(null!=props.i){
+					var params={"id":props.i}
+					$.when(get_address(params),get_address_template()).then(function(d){
+						if(null!=d){
+							var holder=$("[data-address-id='"+d.pandid+"']")
+
+							if(	holder.length>0){
+								var template=address_template.toString()
+								var params=d
+								var str=Mustache.render(template,params)
+								$(holder).html(str)
+							}
+						}
+					})
+				}
+			}
+		}
+	}
+	return props
+}
+function get_address(params){
+	return $.Deferred(function(dfd){
+		var pth="https://parallel.co.uk/netherlands/resources/get/get_address.php"
+		$.ajax(pth,{
+			"data":params,
+			"dataType":"json"
+		}).done($.proxy(function(d){
+			dfd.resolve(d)
+		},this))
+	}).promise()
+}
+function get_address_template(){
+	return $.Deferred(function(dfd){
+		if(null==address_template){
+			var pth="https://parallel.co.uk/netherlands/resources/get/get_template.php?url=https://parallel.co.uk/netherlands/resources/templates/address.html"
+			$.ajax(pth,{
+
+				"dataType":"text"
+			}).done($.proxy(function(d){
+				address_template=d.toString()
+				dfd.resolve()
+			},this))
+
+		}else{
+			dfd.resolve()
+		}
+	}).promise()
+}
+</script>
+
+</body>
+</html>

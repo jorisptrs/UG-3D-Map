@@ -19,3 +19,7 @@ Run from root:
 Access via:
 
 > localhost:8080
+
+## DB data
+Downlaoded from [3dbag](https://3dbag.nl/en/download):
+> pg_restore --no-owner --no-privileges --format=directory --jobs=2 --port=5432 --username=postgres -d netherlands ./data
